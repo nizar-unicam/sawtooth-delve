@@ -8,7 +8,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 make sure to have docker and docker composer installed and run docker-compose up 
 
 ```
-docker-compose up -d
+docker-compose up -d --force-recreate
 
 ```
 
