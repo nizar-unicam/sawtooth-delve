@@ -5,6 +5,8 @@ import axios from "axios";
 import { Table } from "antd";
 import BlockCard from "./BlockCard";
 
+import {truncate_address} from '../utils'
+
 export default class BlockList extends Component {
   // render the list of the blocks from http://localhost:8008/blocks
 
@@ -22,12 +24,13 @@ export default class BlockList extends Component {
       {
         title: "Block Number",
         dataIndex: ['header', 'block_num'],
-        key: "block_num",
+        key: "block_num"
       },
       {
         title: "Address",
         dataIndex: "header_signature",
-        key: "sig"
+        key: "sig",
+        render: text => truncate_address(text)
       },
       {
         title: "batches",
