@@ -45,6 +45,10 @@ export default class Navigation extends Component {
         </Menu.Item>
 
 
+        <Menu.Item key="state">
+          <Link to="/state">State</Link>
+        </Menu.Item>
+
 
         <Menu.Item key="status">
           <Link to="/status">Status</Link>

@@ -153,9 +153,6 @@ export default class Transaction extends Component {
           <Descriptions.Item label="Nonce" span={4}>
             {this.state.transaction.header.nonce}
           </Descriptions.Item>
-          <Descriptions.Item label="Status" span={3}>
-            <Badge status="processing" text="Running" />
-          </Descriptions.Item>
 
           <Descriptions.Item label="Dependencies" span={4}>
             {this.renderDependencyList()}

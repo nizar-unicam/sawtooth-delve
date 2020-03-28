@@ -2,7 +2,14 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Descriptions, Badge, message, Table } from "antd";
 
-import { truncate_address, wrap_tx, wrap_copy, wrap_copy_no_trunc, wrap_block, wrap_batch } from "../utils";
+import {
+  truncate_address,
+  wrap_tx,
+  wrap_copy,
+  wrap_copy_no_trunc,
+  wrap_block,
+  wrap_batch
+} from "../utils";
 
 import { Tag } from "antd";
 
@@ -74,20 +81,33 @@ export default class Block extends Component {
   render() {
     return (
       <div>
-
-
         <div>
-          <b> Block number : {this.state.block.header.block_num} </b>&nbsp; &nbsp;
+          <b> Block number : {this.state.block.header.block_num} </b>&nbsp;
+          &nbsp;
         </div>
 
         <div>
           <b> Block : </b>&nbsp; &nbsp;
-          <Tag color="magenta">  {wrap_copy_no_trunc(this.state.block.header_signature)} </Tag>
+          <Tag color="magenta">
+            {" "}
+            {wrap_copy_no_trunc(this.state.block.header_signature)}{" "}
+          </Tag>
         </div>
 
         <div className="space_it">
           <b> Signer : </b>&nbsp; &nbsp;
-          <Tag color="#566685">  {wrap_copy_no_trunc(this.state.block.header.signer_public_key)} </Tag>
+          <Tag color="#566685">
+            {" "}
+            {wrap_copy_no_trunc(this.state.block.header.signer_public_key)}{" "}
+          </Tag>
+        </div>
+
+        <div>
+          <b>Previous Block : </b>&nbsp; &nbsp;
+          <Tag color="orange">
+            {" "}
+            {wrap_copy_no_trunc(this.state.block.header.previous_block_id)}{" "}
+          </Tag>
         </div>
 
         <div className="space_it">

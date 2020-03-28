@@ -14,6 +14,8 @@ import Transaction from "./components/Transaction";
 
 import Batch from "./components/Batch";
 
+import ChainState from "./components/ChainState";
+
 import { Layout } from "antd";
 import BatchList from "./components/BatchList";
 import Status from "./components/Status";
@@ -68,6 +70,10 @@ export default class App extends Component {
 
                   <Route path="/status">
                     <Status />
+                  </Route>
+
+                  <Route path="/state">
+                    <ChainState />
                   </Route>
 
 
