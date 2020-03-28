@@ -2,10 +2,9 @@ import React, { Component } from "react";
 
 import axios from "axios";
 
-import { Table } from "antd";
-import BlockCard from "./BlockCard";
+import { Table, Tag } from "antd";
 
-import {truncate_address} from '../utils'
+import { truncate_address, wrap_copy, wrap_block } from "../utils";
 
 export default class BlockList extends Component {
   // render the list of the blocks from http://localhost:8008/blocks
@@ -19,31 +18,56 @@ export default class BlockList extends Component {
     this.fetchBlocks();
   }
 
+  renderBlockNumber(block_num) {
+    if (block_num == "0") {
+      // this is the genesis block
+
+      return (
+        <Tag color="green" key={block_num}>
+          genesis
+        </Tag>
+      );
+    } else {
+      return block_num;
+    }
+  }
+
   renderListOfBlocks() {
     const columns = [
       {
         title: "Block Number",
-        dataIndex: ['header', 'block_num'],
-        key: "block_num"
+        dataIndex: ["header", "block_num"],
+        key: "block_num",
+        render: text => this.renderBlockNumber(text)
       },
+
+      {
+        title: "Signer Public Key",
+        dataIndex: ["header", "signer_public_key"],
+        key: "signer_public_key",
+        render: text => wrap_copy(text)
+      },
+
       {
         title: "Address",
         dataIndex: "header_signature",
         key: "sig",
-        render: text => truncate_address(text)
+        render: text => wrap_block(text)
       },
       {
         title: "batches",
-        dataIndex: ['batches', 'length'],
+        dataIndex: ["batches", "length"],
         key: "len"
       }
     ];
 
-    return <Table rowKey={block => block.header_signature} dataSource={this.state.blocks} columns={columns} />;
-
-    return this.state.blocks.map(block => (
-      <BlockCard key={block.header_signature} block={block} />
-    ));
+    return (
+      <Table
+        rowKey={block => block.header_signature}
+        dataSource={this.state.blocks}
+        columns={columns}
+      />
+    );
   }
 
   async fetchBlocks() {

@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { Table, message } from "antd";
 
-import { truncate_address, wrap_tx } from "../utils";
+import { truncate_address, wrap_tx, wrap_copy } from "../utils";
 
 import { CopyOutlined } from "@ant-design/icons";
 
@@ -29,14 +29,7 @@ export default class TransactionList extends Component {
         dataIndex: ["header", "batcher_public_key"],
         key: "block_num",
         render: (text, transaction) => (
-          <span>
-            <p>{truncate_address(text)}</p>
-
-            <CopyToClipboard text={text} onCopy={this.onCopy}>
-              <CopyOutlined />
-            </CopyToClipboard>
-
-          </span>
+            wrap_copy(text)
         )
       },
       {
@@ -44,7 +37,7 @@ export default class TransactionList extends Component {
         dataIndex: "header_signature",
         key: "sig",
         render: (text, transaction) => (
-          wrap_tx(text, true)
+          wrap_tx(text)
         )
       },
       {

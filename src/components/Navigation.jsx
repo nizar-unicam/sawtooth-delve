@@ -7,15 +7,7 @@ import {
   SettingOutlined
 } from "@ant-design/icons";
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-
-
-
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 const { SubMenu } = Menu;
 
@@ -37,9 +29,10 @@ export default class Navigation extends Component {
         onClick={this.handleClick}
         selectedKeys={[this.state.current]}
         mode="horizontal"
+        theme="dark"
       >
-        <Menu.Item key="Batches">
-          <Link to="/batches">Batches</Link>
+        <Menu.Item key="Blocks">
+          <Link to="/blocks">Blocks</Link>
         </Menu.Item>
         <Menu.Item key="app">
           <Link to="/transactions">Transactions</Link>

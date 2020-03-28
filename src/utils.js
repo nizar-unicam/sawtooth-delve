@@ -15,7 +15,27 @@ function truncate_address(address) {
   return first_part + " . . . ";
 }
 
-function wrap_tx(text, truncate) {
+
+
+function wrap_block(text) {
+  return (
+    <span>
+      <Link to={"/blocks/" + text}> {truncate_address(text)}</Link>
+      <CopyToClipboard
+        text={text}
+        onCopy={() => {
+          message.success("Copied !");
+        }}
+      >
+        <CopyOutlined />
+      </CopyToClipboard>
+    </span>
+  );
+}
+
+
+
+function wrap_tx(text) {
   return (
     <span>
       <Link to={"/transactions/" + text}> {truncate_address(text)}</Link>
@@ -31,4 +51,23 @@ function wrap_tx(text, truncate) {
   );
 }
 
-export { truncate_address, wrap_tx };
+
+
+function wrap_copy(text) {
+  return (
+    <span>
+      {truncate_address(text)}
+      <CopyToClipboard
+        text={text}
+        onCopy={() => {
+          message.success("Copied !");
+        }}
+      >
+        <CopyOutlined />
+      </CopyToClipboard>
+    </span>
+  );
+}
+
+
+export { truncate_address, wrap_tx, wrap_copy, wrap_block };
