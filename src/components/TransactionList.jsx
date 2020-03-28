@@ -4,11 +4,12 @@ import axios from "axios";
 
 import { Table, message } from "antd";
 
-import { truncate_address } from "../utils";
+import { truncate_address, wrap_tx } from "../utils";
 
 import { CopyOutlined } from "@ant-design/icons";
 
 import { CopyToClipboard } from 'react-copy-to-clipboard'
+
 
 export default class TransactionList extends Component {
   constructor(props) {
@@ -20,9 +21,6 @@ export default class TransactionList extends Component {
     this.fetchTransactions();
   }
 
-  onCopy() {
-      message.success('copied');
-  }
 
   renderTransactions() {
     const columns = [
@@ -32,7 +30,7 @@ export default class TransactionList extends Component {
         key: "block_num",
         render: (text, transaction) => (
           <span>
-            <a>{truncate_address(text)}</a>
+            <p>{truncate_address(text)}</p>
 
             <CopyToClipboard text={text} onCopy={this.onCopy}>
               <CopyOutlined />
@@ -46,14 +44,7 @@ export default class TransactionList extends Component {
         dataIndex: "header_signature",
         key: "sig",
         render: (text, transaction) => (
-          <span>
-            <a>{truncate_address(text)}</a>
-
-            <CopyToClipboard text={text} onCopy={this.onCopy}>
-              <CopyOutlined />
-            </CopyToClipboard>
-
-          </span>
+          wrap_tx(text, true)
         )
       },
       {
