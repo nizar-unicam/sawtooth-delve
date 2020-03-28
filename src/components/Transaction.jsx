@@ -12,6 +12,10 @@ import { CopyOutlined } from "@ant-design/icons";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
+import cbor from "cbor";
+
+import CBOR from "cbor-js";
+
 export default class Transaction extends Component {
   constructor(props) {
     super(props);
@@ -71,13 +75,49 @@ export default class Transaction extends Component {
     });
   }
 
-
   renderOutputList() {
     return this.state.transaction.header.outputs.map((value, index) => {
       return <p key={index}>{value}</p>;
     });
   }
 
+  base64ToHex(str) {
+    const raw = atob(str);
+    let result = "";
+    for (let i = 0; i < raw.length; i++) {
+      const hex = raw.charCodeAt(i).toString(16);
+      result += hex.length === 2 ? hex : "0" + hex;
+    }
+    return result.toUpperCase();
+  }
+
+  renderDecodePayload() {
+    const payload = this.state.transaction.payload;
+
+    if (payload !== undefined) {
+      // Decode the String
+      var decodedString = this.base64ToHex(payload);
+
+      const decoded = cbor.decode(decodedString);
+      // var decoded = CBOR.decode(payload);
+      //console.log(decoded);
+      let list = this.renderObj(decoded);
+      return list
+
+    }
+  }
+
+  renderObj = object => {
+
+    console.log(object);
+
+    return Object.keys(object).map((obj, i) => {
+      console.log(obj);
+      console.log(i);
+
+      return <div key={i}>{[obj]} : {object[obj]}</div>;
+    });
+  };
 
   render() {
     return (
@@ -110,23 +150,21 @@ export default class Transaction extends Component {
             {this.renderInputList()}
           </Descriptions.Item>
 
-
           <Descriptions.Item label="Outputs" span={4}>
             {this.renderOutputList()}
           </Descriptions.Item>
-
 
           <Descriptions.Item label="Payload SHA512" span={4}>
             {this.state.transaction.header.payload_sha512}
           </Descriptions.Item>
 
-
-
-          <Descriptions.Item label="Payload SHA512" span={4}>
+          <Descriptions.Item label="Payload raw cbor" span={4}>
             {this.state.transaction.payload}
           </Descriptions.Item>
 
-
+          <Descriptions.Item label="Payload decoded cbor" span={4}>
+            {this.renderDecodePayload()}
+          </Descriptions.Item>
         </Descriptions>
       </div>
     );
