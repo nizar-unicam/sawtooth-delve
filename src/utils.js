@@ -52,15 +52,14 @@ function wrap_tx(text) {
 }
 
 
-
-function wrap_copy(text) {
+function wrap_batch(text) {
   return (
     <span>
-      {truncate_address(text)}
+      <Link to={"/batches/" + text}> {truncate_address(text)}</Link>
       <CopyToClipboard
         text={text}
         onCopy={() => {
-          message.success("Copied !");
+          message.success("copied !");
         }}
       >
         <CopyOutlined />
@@ -70,4 +69,38 @@ function wrap_copy(text) {
 }
 
 
-export { truncate_address, wrap_tx, wrap_copy, wrap_block };
+
+function wrap_copy(text) {
+  return (
+    <span>
+      {truncate_address(text)}
+      <CopyToClipboard
+        text={text}
+        onCopy={() => {
+          message.success("copied !");
+        }}
+      >
+        <CopyOutlined />
+      </CopyToClipboard>
+    </span>
+  );
+}
+
+function wrap_copy_no_trunc(text) {
+  return (
+    <span>
+      {text}
+      <CopyToClipboard
+        text={text}
+        onCopy={() => {
+          message.success("copied !");
+        }}
+      >
+        <CopyOutlined />
+      </CopyToClipboard>
+    </span>
+  );
+}
+
+
+export { truncate_address, wrap_tx, wrap_copy, wrap_block, wrap_copy_no_trunc, wrap_batch  };

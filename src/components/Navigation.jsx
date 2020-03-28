@@ -34,6 +34,12 @@ export default class Navigation extends Component {
         <Menu.Item key="Blocks">
           <Link to="/blocks">Blocks</Link>
         </Menu.Item>
+
+
+        <Menu.Item key="Batches">
+          <Link to="/batches">Batches</Link>
+        </Menu.Item>
+
         <Menu.Item key="app">
           <Link to="/transactions">Transactions</Link>
         </Menu.Item>

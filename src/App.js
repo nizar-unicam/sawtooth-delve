@@ -12,6 +12,9 @@ import BlockList from "./components/BlockList";
 import TransactionList from "./components/TransactionList";
 import Transaction from "./components/Transaction";
 
+import Batch from "./components/Batch"
+
+
 import { Layout } from "antd";
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -42,6 +45,18 @@ export default class App extends Component {
                   </Route>
 
                   <Route
+                    path="/batches/:id"
+                    component={props => (
+                      <Batch {...props} key={window.location.pathname} />
+                    )}
+                  />
+
+                  <Route path="/batches">
+                    <BlockList />
+                  </Route>
+
+
+                  <Route
                     path="/transactions/:id"
                     component={props => (
                       <Transaction {...props} key={window.location.pathname} />
@@ -50,6 +65,11 @@ export default class App extends Component {
                   <Route path="/transactions">
                     <TransactionList />
                   </Route>
+
+
+
+
+
                 </Switch>
               </div>
             </Content>

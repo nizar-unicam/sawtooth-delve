@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Descriptions, Badge, message, Table } from "antd";
 
-import { truncate_address, wrap_tx, wrap_copy } from "../utils";
+import { truncate_address, wrap_tx, wrap_copy, wrap_copy_no_trunc, wrap_block, wrap_batch } from "../utils";
+
+import { Tag } from "antd";
 
 export default class Block extends Component {
   constructor(props) {
@@ -15,7 +17,8 @@ export default class Block extends Component {
         header: {
           block_num: "",
           consensus: ""
-        }
+        },
+        transactions: []
       }
     };
   }
@@ -23,20 +26,20 @@ export default class Block extends Component {
   renderBatchesOfBlocks() {
     const columns = [
       {
-        title: "Batch public key",
+        title: "Signer public key",
         dataIndex: ["header", "signer_public_key"],
         key: "batch_id",
         render: (text, transaction) => wrap_copy(text)
       },
       {
-        title: "Signature",
+        title: "Batch id",
         dataIndex: "header_signature",
         key: "header_signature",
-        render: (text, transaction) => wrap_copy(text)
+        render: (text, transaction) => wrap_batch(text)
       },
       {
         title: "Tx in this batch",
-        dataIndex: ["header", "transactions", "length"],
+        dataIndex: ["transactions", "length"],
         key: "tx_len"
       }
     ];
@@ -71,14 +74,25 @@ export default class Block extends Component {
   render() {
     return (
       <div>
-        <div className="space_it">
-          <h3> block {this.state.block.header_signature} </h3>
+
+
+        <div>
+          <b> Block number : {this.state.block.header.block_num} </b>&nbsp; &nbsp;
+        </div>
+
+        <div>
+          <b> Block : </b>&nbsp; &nbsp;
+          <Tag color="magenta">  {wrap_copy_no_trunc(this.state.block.header_signature)} </Tag>
         </div>
 
         <div className="space_it">
-          <h3> batches </h3>
+          <b> Signer : </b>&nbsp; &nbsp;
+          <Tag color="#566685">  {wrap_copy_no_trunc(this.state.block.header.signer_public_key)} </Tag>
         </div>
 
+        <div className="space_it">
+          <h3> batches in this block : {this.state.block.batches.length} </h3>
+        </div>
         {this.renderBatchesOfBlocks()}
       </div>
     );

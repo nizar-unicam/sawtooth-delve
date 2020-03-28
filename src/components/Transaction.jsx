@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Card } from "antd";
 
-import { Descriptions, Badge, message } from "antd";
+import { Descriptions, Badge, message, Tag } from "antd";
 
-import { truncate_address, wrap_tx } from "../utils";
+import { truncate_address, wrap_tx, wrap_copy_no_trunc } from "../utils";
 
 import { Link, Redirect } from "react-router-dom";
 
@@ -122,6 +122,21 @@ export default class Transaction extends Component {
   render() {
     return (
       <div>
+
+
+        <div>
+          <b> Transaction : </b>&nbsp; &nbsp;
+          <Tag color="green">  {wrap_copy_no_trunc(this.state.transaction.header_signature)} </Tag>
+        </div>
+
+
+        <div className="space_it">
+          <b> Signer : </b>&nbsp; &nbsp;
+          <Tag color="#566685">  {wrap_copy_no_trunc(this.state.transaction.header.signer_public_key)} </Tag>
+        </div>
+
+
+
         <Descriptions title="Tx info" layout="horizontal" bordered>
           <Descriptions.Item label="Header Signature" span={4}>
             {this.state.transaction.header_signature}
