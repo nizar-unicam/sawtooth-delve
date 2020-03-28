@@ -12,10 +12,11 @@ import BlockList from "./components/BlockList";
 import TransactionList from "./components/TransactionList";
 import Transaction from "./components/Transaction";
 
-import Batch from "./components/Batch"
-
+import Batch from "./components/Batch";
 
 import { Layout } from "antd";
+import BatchList from "./components/BatchList";
+import Status from "./components/Status";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -52,9 +53,8 @@ export default class App extends Component {
                   />
 
                   <Route path="/batches">
-                    <BlockList />
+                    <BatchList />
                   </Route>
-
 
                   <Route
                     path="/transactions/:id"
@@ -66,17 +66,16 @@ export default class App extends Component {
                     <TransactionList />
                   </Route>
 
-
-
+                  <Route path="/status">
+                    <Status />
+                  </Route>
 
 
                 </Switch>
               </div>
             </Content>
           </Router>
-          <Footer style={{ textAlign: "center" }}>
-            UNICAM 2020
-          </Footer>
+          <Footer style={{ textAlign: "center" }}>UNICAM 2020</Footer>
         </Layout>
       </div>
     );

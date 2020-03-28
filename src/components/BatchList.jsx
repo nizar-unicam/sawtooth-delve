@@ -47,7 +47,7 @@ export default class BatchList extends Component {
     return (
       <Table
         rowKey={batches => batches.header_signature}
-        dataSource={this.state.block.batches}
+        dataSource={this.state.batches}
         columns={columns}
       />
     );
@@ -70,10 +70,8 @@ export default class BatchList extends Component {
   render() {
     return (
       <div>
-        <div>
-          <b> BatchList number : {this.state.block.header.block_num} </b>&nbsp;
-          &nbsp;
-        </div>
+
+          {this.renderBatchesOfBatchLists()}
 
       </div>
     );

@@ -40,9 +40,17 @@ export default class Navigation extends Component {
           <Link to="/batches">Batches</Link>
         </Menu.Item>
 
-        <Menu.Item key="app">
+        <Menu.Item key="transactions">
           <Link to="/transactions">Transactions</Link>
         </Menu.Item>
+
+
+
+        <Menu.Item key="status">
+          <Link to="/status">Status</Link>
+        </Menu.Item>
+
+
       </Menu>
     );
   }
