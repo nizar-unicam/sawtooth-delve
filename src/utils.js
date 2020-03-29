@@ -15,8 +15,6 @@ function truncate_address(address) {
   return first_part + " . . . ";
 }
 
-
-
 function wrap_block(text) {
   return (
     <span>
@@ -32,8 +30,6 @@ function wrap_block(text) {
     </span>
   );
 }
-
-
 
 function wrap_tx(text) {
   return (
@@ -51,7 +47,6 @@ function wrap_tx(text) {
   );
 }
 
-
 function wrap_batch(text) {
   return (
     <span>
@@ -67,8 +62,6 @@ function wrap_batch(text) {
     </span>
   );
 }
-
-
 
 function wrap_copy(text) {
   return (
@@ -102,5 +95,35 @@ function wrap_copy_no_trunc(text) {
   );
 }
 
+function base64ToHex(str) {
+  const raw = atob(str);
+  let result = "";
+  for (let i = 0; i < raw.length; i++) {
+    const hex = raw.charCodeAt(i).toString(16);
+    result += hex.length === 2 ? hex : "0" + hex;
+  }
+  return result.toUpperCase();
+}
 
-export { truncate_address, wrap_tx, wrap_copy, wrap_block, wrap_copy_no_trunc, wrap_batch  };
+
+function base64toUint8(base64) {
+  var raw = atob(base64);
+  var rawLength = raw.length;
+  var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+  for (let i = 0; i < rawLength; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+  return array;
+}
+
+export {
+  truncate_address,
+  wrap_tx,
+  wrap_copy,
+  wrap_block,
+  wrap_copy_no_trunc,
+  wrap_batch,
+  base64toUint8,
+  base64ToHex
+};

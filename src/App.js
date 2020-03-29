@@ -23,6 +23,10 @@ import Status from "./components/Status";
 const { Header, Footer, Sider, Content } = Layout;
 
 export default class App extends Component {
+  componentDidMount() {
+   
+  }
+
   render() {
     return (
       <div className="App">
@@ -75,8 +79,6 @@ export default class App extends Component {
                   <Route path="/state">
                     <ChainState />
                   </Route>
-
-
                 </Switch>
               </div>
             </Content>

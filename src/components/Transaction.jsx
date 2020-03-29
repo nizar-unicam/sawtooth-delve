@@ -4,7 +4,13 @@ import { Card } from "antd";
 
 import { Descriptions, Badge, message, Tag } from "antd";
 
-import { truncate_address, wrap_tx, wrap_copy_no_trunc } from "../utils";
+import {
+  truncate_address,
+  wrap_tx,
+  wrap_copy_no_trunc,
+  base64ToHex,
+  base64toUint8
+} from "../utils";
 
 import { Link, Redirect } from "react-router-dom";
 
@@ -14,7 +20,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import cbor from "cbor";
 
-import CBOR from "cbor-js";
+import protobuf from "protobufjs";
 
 export default class Transaction extends Component {
   constructor(props) {
@@ -81,61 +87,107 @@ export default class Transaction extends Component {
     });
   }
 
-  base64ToHex(str) {
-    const raw = atob(str);
-    let result = "";
-    for (let i = 0; i < raw.length; i++) {
-      const hex = raw.charCodeAt(i).toString(16);
-      result += hex.length === 2 ? hex : "0" + hex;
-    }
-    return result.toUpperCase();
-  }
-
   renderDecodePayload() {
+    this.decodeProto();
+
     const payload = this.state.transaction.payload;
 
     if (payload !== undefined) {
       // Decode the String
-      var decodedString = this.base64ToHex(payload);
+      var decodedString = base64ToHex(payload);
 
       const decoded = cbor.decode(decodedString);
       // var decoded = CBOR.decode(payload);
       //console.log(decoded);
       let list = this.renderObj(decoded);
-      return list
-
+      return list;
     }
   }
 
   renderObj = object => {
-
     console.log(object);
 
     return Object.keys(object).map((obj, i) => {
       console.log(obj);
       console.log(i);
 
-      return <div key={i}>{[obj]} : {object[obj]}</div>;
+      return (
+        <div key={i}>
+          {[obj]} : {object[obj]}
+        </div>
+      );
     });
   };
+
+  // todo decouple this from the component logic. this should be handled by some Central Proto Manager
+  decodeProto() {
+    const payload = this.state.transaction.payload;
+
+    if (this.state.transaction.header.family_name == "sawtooth_settings") {
+      // get the correct proto for this one
+
+      protobuf.load(
+        "https://raw.githubusercontent.com/hyperledger/sawtooth-core/master/families/settings/protos/settings.proto",
+        function(err, root) {
+          console.log(err);
+          console.log(root);
+
+          // Obtain a message type
+          let SettingsPayload = root.SettingsPayload;
+
+          let SettingVote = root.SettingVote;
+          let SettingProposal = root.SettingProposal;
+
+          console.log(SettingsPayload);
+
+          // if action is 1 = SettingProposal
+          // if action is 2 = SettingVote
+
+          const uint8_settings_payload = base64toUint8(payload);
+
+          let message = SettingsPayload.decode(uint8_settings_payload)
+
+          console.log(uint8_settings_payload);
+          console.log(message);
+
+          // if action is 1 = SettingProposal
+          // if action is 2 = SettingVote
+
+          if (message.action == 1) {
+            let proposal = SettingProposal.decode(message.data)
+            console.log(proposal);
+          } else if (message.action == 2) {
+            let vote = SettingVote.decode(message.data)
+            console.log(vote);
+          }
+        }
+      );
+    }
+  }
+
+
+
 
   render() {
     return (
       <div>
-
-
         <div>
           <b> Transaction : </b>&nbsp; &nbsp;
-          <Tag color="green">  {wrap_copy_no_trunc(this.state.transaction.header_signature)} </Tag>
+          <Tag color="green">
+            {" "}
+            {wrap_copy_no_trunc(this.state.transaction.header_signature)}{" "}
+          </Tag>
         </div>
-
 
         <div className="space_it">
           <b> Signer : </b>&nbsp; &nbsp;
-          <Tag color="#566685">  {wrap_copy_no_trunc(this.state.transaction.header.signer_public_key)} </Tag>
+          <Tag color="#566685">
+            {" "}
+            {wrap_copy_no_trunc(
+              this.state.transaction.header.signer_public_key
+            )}{" "}
+          </Tag>
         </div>
-
-
 
         <Descriptions title="Tx info" layout="horizontal" bordered>
           <Descriptions.Item label="Header Signature" span={4}>

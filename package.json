@@ -10,6 +10,7 @@
     "axios": "^0.19.2",
     "cbor": "^5.0.1",
     "cbor-js": "^0.1.0",
+    "protobufjs": "^6.8.9",
     "react": "^16.13.1",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",

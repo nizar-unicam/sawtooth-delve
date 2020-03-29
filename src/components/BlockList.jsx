@@ -49,7 +49,7 @@ export default class BlockList extends Component {
       },
 
       {
-        title: "Address",
+        title: "Header Signature",
         dataIndex: "header_signature",
         key: "sig",
         render: text => wrap_block(text)
