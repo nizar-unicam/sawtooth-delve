@@ -22,6 +22,8 @@ import cbor from "cbor";
 
 import protobuf from "protobufjs";
 
+import settings_decode from '../protos/SettingsProto'
+
 export default class Transaction extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +36,8 @@ export default class Transaction extends Component {
           dependencies: [],
           outputs: []
         }
-      }
+      },
+      protoObj: {}
     };
   }
 
@@ -54,6 +57,8 @@ export default class Transaction extends Component {
 
     this.setState({ transaction: transaction.data.data });
     console.log(transaction.data.data);
+
+    this.renderDecodePayload();
   }
 
   renderDependencyList() {
@@ -87,86 +92,88 @@ export default class Transaction extends Component {
     });
   }
 
-  renderDecodePayload() {
-    this.decodeProto();
-
+ async renderDecodePayload() {
     const payload = this.state.transaction.payload;
 
     if (payload !== undefined) {
-      // Decode the String
-      var decodedString = base64ToHex(payload);
+      // check family type
 
-      const decoded = cbor.decode(decodedString);
-      // var decoded = CBOR.decode(payload);
-      //console.log(decoded);
-      let list = this.renderObj(decoded);
-      return list;
+      if (this.state.transaction.header.family_name == "sawtooth_settings") {
+        // get the correct proto for this one
+
+        this.setState({ protoObj : await settings_decode(payload)})
+      
+      } else {
+        // Decode the String
+        var decodedString = base64ToHex(payload);
+
+        // replace with proto buff of intkey
+        const decoded = cbor.decode(decodedString);
+        // var decoded = CBOR.decode(payload);
+        //console.log(decoded);
+
+        this.setState({ protoObj: decoded });
+      }
     }
   }
 
-  renderObj = object => {
-    console.log(object);
-
-    return Object.keys(object).map((obj, i) => {
+  renderObj() {
+    console.log(this.state.protoObj);
+    return Object.keys(this.state.protoObj).map((obj, i) => {
       console.log(obj);
       console.log(i);
 
       return (
         <div key={i}>
-          {[obj]} : {object[obj]}
+          {[obj]} : {this.state.protoObj[obj]}
         </div>
       );
     });
-  };
-
-  // todo decouple this from the component logic. this should be handled by some Central Proto Manager
-  decodeProto() {
-    const payload = this.state.transaction.payload;
-
-    if (this.state.transaction.header.family_name == "sawtooth_settings") {
-      // get the correct proto for this one
-
-      protobuf.load(
-        "https://raw.githubusercontent.com/hyperledger/sawtooth-core/master/families/settings/protos/settings.proto",
-        function(err, root) {
-          console.log(err);
-          console.log(root);
-
-          // Obtain a message type
-          let SettingsPayload = root.SettingsPayload;
-
-          let SettingVote = root.SettingVote;
-          let SettingProposal = root.SettingProposal;
-
-          console.log(SettingsPayload);
-
-          // if action is 1 = SettingProposal
-          // if action is 2 = SettingVote
-
-          const uint8_settings_payload = base64toUint8(payload);
-
-          let message = SettingsPayload.decode(uint8_settings_payload)
-
-          console.log(uint8_settings_payload);
-          console.log(message);
-
-          // if action is 1 = SettingProposal
-          // if action is 2 = SettingVote
-
-          if (message.action == 1) {
-            let proposal = SettingProposal.decode(message.data)
-            console.log(proposal);
-          } else if (message.action == 2) {
-            let vote = SettingVote.decode(message.data)
-            console.log(vote);
-          }
-        }
-      );
-    }
   }
 
+  // todo decouple this from the component logic. this should be handled by some Central Proto Manager
+  decodeProto(payload) {
+    protobuf.load(
+      "https://raw.githubusercontent.com/hyperledger/sawtooth-core/master/families/settings/protos/settings.proto",
+      (err, root) => {
+        console.log(err);
+        console.log(root);
 
+        // Obtain a message type
+        let SettingsPayload = root.SettingsPayload;
 
+        let SettingVote = root.SettingVote;
+        let SettingProposal = root.SettingProposal;
+
+        console.log(SettingsPayload);
+
+        // if action is 1 = SettingProposal
+        // if action is 2 = SettingVote
+
+        const uint8_settings_payload = base64toUint8(payload);
+
+        let message = SettingsPayload.decode(uint8_settings_payload);
+
+        console.log(uint8_settings_payload);
+        console.log(message);
+
+        // if action is 1 = SettingProposal
+        // if action is 2 = SettingVote
+
+        if (message.action == 1) {
+
+          let proposal = SettingProposal.decode(message.data);
+          console.log(proposal);
+          this.setState({ protoObj: proposal });
+        } else if (message.action == 2) {
+
+          let vote = SettingVote.decode(message.data);
+          console.log(vote);
+          this.setState({ protoObj: vote });
+        }
+      }
+    );
+  }
 
   render() {
     return (
@@ -226,8 +233,8 @@ export default class Transaction extends Component {
             {this.state.transaction.payload}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Payload decoded cbor" span={4}>
-            {this.renderDecodePayload()}
+          <Descriptions.Item label="Payload decoded cbor / protobuf" span={4}>
+            {this.renderObj()}
           </Descriptions.Item>
         </Descriptions>
       </div>
