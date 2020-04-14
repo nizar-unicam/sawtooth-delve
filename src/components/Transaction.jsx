@@ -9,7 +9,7 @@ import {
   wrap_tx,
   wrap_copy_no_trunc,
   base64ToHex,
-  base64toUint8
+  base64toUint8,
 } from "../utils";
 
 import { Link, Redirect } from "react-router-dom";
@@ -22,7 +22,8 @@ import cbor from "cbor";
 
 import protobuf from "protobufjs";
 
-import settings_decode from '../protos/SettingsProto'
+import settings_decode from "../protos/SettingsProto";
+import smallbank_decode from "../protos/SmallbankProto";
 
 export default class Transaction extends Component {
   constructor(props) {
@@ -34,10 +35,10 @@ export default class Transaction extends Component {
         header: {
           inputs: [],
           dependencies: [],
-          outputs: []
-        }
+          outputs: [],
+        },
       },
-      protoObj: {}
+      protoObj: {},
     };
   }
 
@@ -92,7 +93,7 @@ export default class Transaction extends Component {
     });
   }
 
- async renderDecodePayload() {
+  async renderDecodePayload() {
     const payload = this.state.transaction.payload;
 
     if (payload !== undefined) {
@@ -101,8 +102,12 @@ export default class Transaction extends Component {
       if (this.state.transaction.header.family_name == "sawtooth_settings") {
         // get the correct proto for this one
 
-        this.setState({ protoObj : await settings_decode(payload)})
-      
+        this.setState({ protoObj: await settings_decode(payload) });
+
+      } else if (this.state.transaction.header.family_name == "smallbank") {
+
+        this.setState({ protoObj: await smallbank_decode(payload) });
+
       } else {
         // Decode the String
         var decodedString = base64ToHex(payload);
@@ -130,8 +135,6 @@ export default class Transaction extends Component {
       );
     });
   }
-
-
 
   render() {
     return (
