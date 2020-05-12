@@ -24,6 +24,8 @@ import protobuf from "protobufjs";
 
 import settings_decode from "../protos/SettingsProto";
 import smallbank_decode from "../protos/SmallbankProto";
+import seth_decode from "../protos/SethProto";
+import blockinfo_decode from "../protos/BlockInfoProto";
 
 export default class Transaction extends Component {
   constructor(props) {
@@ -97,28 +99,36 @@ export default class Transaction extends Component {
     const payload = this.state.transaction.payload;
 
     if (payload !== undefined) {
-      // check family type
+      switch (this.state.transaction.header.family_name) {
+        case "sawtooth_settings":
+          this.setState({ protoObj: await settings_decode(payload) });
+          break;
 
-      if (this.state.transaction.header.family_name == "sawtooth_settings") {
-        // get the correct proto for this one
+        case "smallbank":
+          this.setState({ protoObj: await smallbank_decode(payload) });
+          break;
 
-        this.setState({ protoObj: await settings_decode(payload) });
+        case "seth":
+          this.setState({ protoObj: await seth_decode(payload) });
+          break;
 
-      } else if (this.state.transaction.header.family_name == "smallbank") {
+        case "block_info":
+          this.setState({ protoObj: await blockinfo_decode(payload) });
+          break;
 
-        this.setState({ protoObj: await smallbank_decode(payload) });
+        default:
+          var decodedString = base64ToHex(payload);
 
-      } else {
-        // Decode the String
-        var decodedString = base64ToHex(payload);
+          // replace with proto buff of intkey
+          const decoded = cbor.decode(decodedString);
+          // var decoded = CBOR.decode(payload);
+          //console.log(decoded);
 
-        // replace with proto buff of intkey
-        const decoded = cbor.decode(decodedString);
-        // var decoded = CBOR.decode(payload);
-        //console.log(decoded);
+          this.setState({ protoObj: decoded });
 
-        this.setState({ protoObj: decoded });
+          break;
       }
+      // check family type
     }
   }
 
