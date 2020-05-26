@@ -2,16 +2,25 @@ import React, { Component } from "react";
 
 import axios from "axios";
 
-import { Table, Tag, Button, Modal } from "antd";
+import { Button, Modal } from "antd";
+
+import { Table, Tag, Space } from 'antd';
+
+
+
 
 import {
   truncate_address,
   wrap_copy,
   wrap_block,
-  wrap_copy_no_trunc
+  wrap_copy_no_trunc,
 } from "../utils";
 
 import cbor from "cbor";
+
+const { Column, ColumnGroup } = Table;
+
+
 
 export default class ChainState extends Component {
   // render the list of the blocks from http://localhost:8008/blocks
@@ -40,22 +49,31 @@ export default class ChainState extends Component {
       // Decode the String
       var decodedString = this.base64ToHex(payload);
 
-      const decoded = cbor.decode(decodedString);
+      console.log(payload);
+
+      // const decoded = cbor.decode(decodedString);
       // var decoded = CBOR.decode(payload);
       //console.log(decoded);
-      let list = this.renderObj(decoded);
-      this.setState({ list });
+      //let list = this.renderObj(decoded);
+
+      // dont decode the state for now, we'll fix a way to do that later
+
+      //let list = this.renderObj(payload)
+
+      this.setState({ list: payload });
       this.showModal();
     }
   }
 
-  renderObj = object => {
+  renderObj = (object) => {
+    console.log(object);
+
     let type = typeof object;
 
     console.log(type);
 
-    if (type == 'number') {
-      return object
+    if (type == "number") {
+      return object;
     }
 
     if (type == "object") {
@@ -63,32 +81,28 @@ export default class ChainState extends Component {
         console.log(obj);
         console.log(i);
 
-        return (
-          <div key={i}>
-            {[obj]} : {object[obj]}
-          </div>
-        );
+        return <div key={i}>object.data</div>;
       });
     }
   };
 
   showModal = () => {
     this.setState({
-      visible: true
+      visible: true,
     });
   };
 
-  handleOk = e => {
+  handleOk = (e) => {
     console.log(e);
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 
-  handleCancel = e => {
+  handleCancel = (e) => {
     console.log(e);
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 
@@ -98,28 +112,33 @@ export default class ChainState extends Component {
         title: "address",
         dataIndex: ["address"],
         key: "block_num",
-        render: text => wrap_copy_no_trunc(text)
+        render: (text) => wrap_copy_no_trunc(text),
       },
 
       {
         title: "data",
         dataIndex: ["data"],
         key: "data",
-        render: text => (
-          <Button onClick={() => this.renderDecodePayload(text)}>
-            {" "}
-            View data{" "}
-          </Button>
-        )
-      }
+      },
     ];
 
     return (
       <Table
-        rowKey={chain_state => chain_state.address}
+        rowKey={(chain_state) => chain_state.address}
         dataSource={this.state.states}
         columns={columns}
-      />
+      >
+        <Column
+          title="Action"
+          key="action"
+          render={(text, record) => (
+            <Space size="middle">
+              <a>Invite {record.address}</a>
+              <a>Delete</a>
+            </Space>
+          )}
+        />
+      </Table>
     );
   }
 
